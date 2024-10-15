@@ -1,0 +1,72 @@
+html,body{
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  line-height: 1.5;
+  font-size: 20px;
+  background-color:white;
+  width:90%;
+  margin: auto;
+}
+
+header img{
+  width: 60%;
+  margin: 0 0 0 10rem;
+}
+
+h1{
+  text-align: center;
+}
+
+#byline{
+  font-size: 16px;
+  text-align: center;
+  margin: 0;
+}
+
+.navLinks{
+  list-style-type: none;
+  text-align: center; 
+  background-color:palevioletred;
+}
+.navLinks li {
+  display: inline-block;
+  padding: 0 1.5rem 0 1.5rem;
+ }
+.navLinks a{
+  font-size: 16px;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  }
+
+.head3{
+  width:120%;
+}
+
+.flourish-embed{
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+figure img {
+  width: 100%;
+}
+
+figcaption{
+  font-size: 12px;
+  font-style: italic;
+  font-family: Arial, Helvetica, sans-serif;
+}
+footer{
+  background-color: palevioletred;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  margin: 3rem 0 0 0;
+}
+
+
+
+
+
+
+
