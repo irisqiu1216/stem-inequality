@@ -1,0 +1,336 @@
+---
+title: "J298 Data Project"
+author: "Edison Wu"
+date: "2024-03-19"
+output: html_document
+---
+
+```{r setup, include=FALSE, cache=F}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+```
+
+```
+install.packages("tidycensus")
+install.packages("psych")
+install.packages("tidyverse")
+install.packages("janitor")
+install.packages("ggplot2") 
+```
+
+```
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(psych)
+library(tidycensus)
+```
+
+```
+census_api_key("PASTE YOUR KEY HERE", install=TRUE)
+```
+
+Obtain the total number, number of males, number of females, and percentage of females in all STEM and STEM-related Occupations in 2022.
+
+## 1.Acquiring data
+
+### 1.1 STEM and STEM-Related Occupations codes
+First check the list of STEM and STEM-Related Occupations codes from the Census Bureau website: https://www.census.gov/data/tables/time-series/demo/income-poverty/stem-occ-sex-med-earnings.html
+
+### 1.2 Define Occupations and Variables in R
+
+In this step, we create a data frame named stem_occupations using the tibble() function. This data frame includes:
+
+- Occupation: A list of job titles in the STEM field, such as "Computer and information systems managers", "Software developers", etc.
+- Total_var: The variable codes from the ACS that correspond to the total number of individuals employed in each occupation.
+- Male_var: The variable codes that represent the number of males in each occupation.
+- Female_var: The variable codes indicating the number of females in each occupation.
+This data structure serves as the foundation for fetching the specific census data related to each listed occupation.
+```{r}
+v2012 <- load_variables(2012, "acs5", cache = TRUE)
+view(v2012)
+```
+
+```{r}
+stem_occupations <- tibble(
+  Occupation = c("Computer and information systems managers",
+                 "Computer and information research scientists",  
+                 "Computer systems analysts",
+                 "Information security analysts",
+                 "Computer programmers",
+                 "Software developers",
+                 "Web developers",
+                 "Computer support specialists",
+                 "Database administrators and architects",
+                 "Network and computer systems administrators",
+                 "Computer network architects",
+                 "Computer occupations, all other",
+                 "Actuaries",
+                 "Mathematicians",
+                 "Operations research analysts",
+                 "Statisticians",
+                 "Other mathematical science occupations",
+                 "Architectural and engineering managers",
+                 "Surveyors, cartographers, and photogrammetrists",
+                 "Aerospace engineers",
+                 "Agricultural engineers",
+                 "Bioengineers and biomedical engineers",
+                 "Chemical engineers",
+                 "Civil engineers",
+                 "Computer hardware engineers",
+                 "Electrical and electronics engineers",
+                 "Environmental engineers",
+                 "Industrial engineers, including health and safety ",
+                 "Marine engineers and naval architects",
+                 "Materials engineers",
+                 "Mechanical engineers",
+                 "Mining and geological engineers, including mining safety engineers",
+                 "Nuclear engineers",
+                 "Petroleum engineers",
+                 "Engineers, all other",
+                 "Architectural and civil drafters",
+                 "Other engineering technologists and technicians, except drafters",
+                 "Surveying and mapping technicians",
+                 "Sales engineers",
+                 "Natural sciences managers",
+                 "Agricultural and food scientists",
+                 "Biological scientists",
+                 "Conservation scientists and foresters",
+                 "Medical scientists",
+                 "Life scientists, all other",
+                 "Astronomers and physicists",
+                 "Atmospheric and space scientists",
+                 "Chemists and materials scientists",
+                 "Environmental scientists and specialists, including health",
+                 "Physical scientists, all other",
+                 "Economists",
+                 "Survey researchers",
+                 "Clinical and counseling psychologists",
+                 "Urban and regional planners",
+                 "Miscellaneous social scientists and related workers",
+                 "Agricultural and food science technicians",
+                 "Biological technicians",
+                 "Chemical technicians",
+                 "Environmental science and geoscience technicians",
+                 "Nuclear technicians",
+                 "Social science research assistants",
+                 "Other life, physical, and social science technicians",
+                 "Architects, except landscape and naval",
+                 "Medical and health services managers",
+                 "Chiropractors",
+                 "Dentists",
+                 "Dietitians and nutritionists",
+                 "Optometrists",
+                 "Other physicians",
+                 "Surgeons",
+                 "Physician assistants",
+                 "Podiatrists",
+                 "Audiologists",
+                 "Occupational therapists",
+                 "Physical therapists",
+                 "Radiation therapists",
+                 "Recreational therapists",
+                 "Respiratory therapists",
+                 "Speech-language pathologists",
+                 "Therapists, all other",
+                 "Veterinarians",
+                 "Registered nurses",
+                 "Nurse anesthetists",
+                 "Nurse midwives",
+                 "Nurse practitioners",
+                 "Healthcare diagnosing or treating practitioners, all other",
+                 "Clinical laboratory technologists and technicians",
+                 "Dental hygienists",
+                 "Diagnostic medical sonographers",
+                 "Emergency medical technicians",
+                 "Licensed practical and licensed vocational nurses",
+                 "Medical records specialists",
+                 "Opticians, dispensing",
+                 "Miscellaneous health technologists and technicians",
+                 "Other healthcare practitioners and technical occupations"
+                 ),
+                 
+   Total_var = c("B24124_009", "B24124_060", "B24124_061", "B24124_062", "B24124_063", "B24124_064", "B24124_065", "B24124_066", "B24124_067", "B24124_068", "B24124_069", "B24124_070", "B24124_071", "B24124_072", "B24124_073", "B24124_074", "B24124_075", "B24124_020", "B24124_077", "B24124_078", "B24124_079", "B24124_080", "B24124_081", "B24124_082", "B24124_083", "B24124_084", "B24124_085", "B24124_086", "B24124_087", "B24124_088", "B24124_089", "B24124_090", "B24124_091", "B24124_092", "B24124_093", "B24124_094", "B24124_095", "B24124_096", "B24124_275", "B24124_026", "B24124_097", "B24124_098", "B24124_099", "B24124_100", "B24124_101", "B24124_102", "B24124_103", "B24124_104", "B24124_105", "B24124_106", "B24124_107", "B24124_108", "B24124_109", "B24124_110", "B24124_111", "B24124_112", "B24124_113", "B24124_114", "B24124_115", "B24124_116", "B24124_117", "B24124_118", "B24124_076", "B24124_025", "B24124_161", "B24124_162", "B24124_163", "B24124_164", "B24124_165", "B24124_166", "B24124_167", "B24124_168", "B24124_169", "B24124_170", "B24124_171", "B24124_172", "B24124_173", "B24124_174", "B24124_175", "B24124_176", "B24124_177", "B24124_178", "B24124_179", "B24124_180", "B24124_181", "B24124_182", "B24124_183", "B24124_184", "B24124_185", "B24124_186", "B24124_188", "B24124_189", "B24124_190", "B24124_191", "B24124_192"),
+  Male_var = c("B24125_009", "B24125_060", "B24125_061", "B24125_062", "B24125_063", "B24125_064", "B24125_065", "B24125_066", "B24125_067", "B24125_068", "B24125_069", "B24125_070", "B24125_071", "B24125_072", "B24125_073", "B24125_074", "B24125_075", "B24125_020", "B24125_077", "B24125_078", "B24125_079", "B24125_080", "B24125_081", "B24125_082", "B24125_083", "B24125_084", "B24125_085", "B24125_086", "B24125_087", "B24125_088", "B24125_089", "B24125_090", "B24125_091", "B24125_092", "B24125_093", "B24125_094", "B24125_095", "B24125_096", "B24125_275", "B24125_026", "B24125_097", "B24125_098", "B24125_099", "B24125_100", "B24125_101", "B24125_102", "B24125_103", "B24125_104", "B24125_105", "B24125_106", "B24125_107", "B24125_108", "B24125_109", "B24125_110", "B24125_111", "B24125_112", "B24125_113", "B24125_114", "B24125_115", "B24125_116", "B24125_117", "B24125_118", "B24125_076", "B24125_025", "B24125_161", "B24125_162", "B24125_163", "B24125_164", "B24125_165", "B24125_166", "B24125_167", "B24125_168", "B24125_169", "B24125_170", "B24125_171", "B24125_172", "B24125_173", "B24125_174", "B24125_175", "B24125_176", "B24125_177", "B24125_178", "B24125_179", "B24125_180", "B24125_181", "B24125_182", "B24125_183", "B24125_184", "B24125_185", "B24125_186", "B24125_188", "B24125_189", "B24125_190", "B24125_191", "B24125_192"),
+  Female_var = c("B24126_009", "B24126_060", "B24126_061", "B24126_062", "B24126_063", "B24126_064", "B24126_065", "B24126_066", "B24126_067", "B24126_068", "B24126_069", "B24126_070", "B24126_071", "B24126_072", "B24126_073", "B24126_074", "B24126_075", "B24126_020", "B24126_077", "B24126_078", "B24126_079", "B24126_080", "B24126_081", "B24126_082", "B24126_083", "B24126_084", "B24126_085", "B24126_086", "B24126_087", "B24126_088", "B24126_089", "B24126_090", "B24126_091", "B24126_092", "B24126_093", "B24126_094", "B24126_095", "B24125_096", "B24126_275", "B24126_026", "B24126_097", "B24126_098", "B24126_099", "B24126_100", "B24126_101", "B24126_102", "B24126_103", "B24126_104", "B24126_105", "B24126_106", "B24126_107", "B24126_108", "B24126_109", "B24126_110", "B24126_111", "B24126_112", "B24126_113", "B24126_114", "B24126_115", "B24126_116", "B24126_117", "B24126_118", "B24126_076", "B24126_025", "B24126_161", "B24126_162", "B24126_163", "B24126_164", "B24126_165", "B24126_166", "B24126_167", "B24126_168", "B24126_169", "B24126_170", "B24126_171", "B24126_172", "B24126_173", "B24126_174", "B24126_175", "B24126_176", "B24126_177", "B24126_178", "B24126_179", "B24126_180", "B24126_181", "B24126_182", "B24126_183", "B24126_184", "B24126_185", "B24126_186", "B24126_188", "B24126_189", "B24126_190", "B24126_191", "B24126_192")
+)
+
+view(stem_occupations)
+```
+
+## 2.Processing data
+Retrieve data for each occupation and calculate statistics. Select desired columns including total, male, female counts, female percentage and their margins of error (MOE). 
+
+This step involves the actual data retrieval and processing:
+
+Using the rowwise() function to iterate over each row in stem_occupations, ensuring that operations in mutate() are performed on a row-by-row basis.
+get_acs() is called three times per row to fetch the total, male, and female employment figures for the respective occupation from the ACS.
+Inside mutate(), we extract and store the estimated count and margin of error (MOE) for total, male, and female figures. This information is used to calculate the female percentage and its MOE:
+Total, Males, and Females represent the number of individuals in each category.
+Total_MOE, Males_MOE, and Females_MOE reflect the uncertainty or potential error range in these counts.
+Female_Percentage is calculated to understand the proportion of females in each occupation, providing insight into gender representation.
+Female_Percentage_MOE is computed to assess the reliability of the female percentage, taking into account the error margins from both female and total counts.
+The select() function then narrows down the columns to the relevant metrics for further analysis.
+
+*It may take a little while to load...
+```{r}
+stem_data <- stem_occupations %>%
+  rowwise() %>%
+  mutate(
+    Total_data = get_acs(geography = "us", variables = Total_var, year = 2012, survey = "acs1"),
+    Males_data = get_acs(geography = "us", variables = Male_var, year = 2012, survey = "acs1"),
+    Females_data = get_acs(geography = "us", variables = Female_var, year = 2012, survey = "acs1"),
+    Total = Total_data$estimate,
+    Total_MOE = Total_data$moe,
+    Males = Males_data$estimate,
+    Males_MOE = Males_data$moe,
+    Females = Females_data$estimate,
+    Females_MOE = Females_data$moe,
+    Female_Percentage = round(Females / Total * 100, 1),
+    Female_Percentage_MOE = round(100 * sqrt((Females_MOE / Females)^2 + (Total_MOE / Total)^2), 1)  
+  ) %>%
+  select(Occupation, Total, Total_MOE, Males, Males_MOE, Females, Females_MOE, Female_Percentage, Female_Percentage_MOE)
+
+view(stem_data)
+```
+
+
+## 3.Categorize and Summarize Data
+Assign categories to each occupation, then group the data by these categories to calculate the sum for each group.
+
+We use the mutate() function to categorize each occupation into broader groups like "Computer Occupations", "Engineering Occupations", etc., facilitating a more segmented analysis.
+group_by(Category) is applied to group the data by these categories, which allows for collective operations on each group.
+summarise() is used within each category to aggregate the counts and compute total figures, MOEs, and percentages for males and females, providing a summarized view per category.
+
+```{r}
+stem_data <- stem_data %>%
+  mutate(
+    Category = case_when(
+      Occupation %in% c("Computer and information systems managers",
+                        "Computer and information research scientists",  
+                        "Computer systems analysts",
+                        "Information security analysts",
+                        "Computer programmers",
+                        "Software developers",
+                        "Web developers",
+                        "Computer support specialists",
+                        "Database administrators and architects",
+                        "Network and computer systems administrators",
+                        "Computer network architects",
+                        "Computer occupations, all other") ~ "Computer Occupations",
+      Occupation %in% c("Actuaries",
+                        "Mathematicians",
+                        "Operations research analysts",
+                        "Statisticians",
+                        "Other mathematical science occupations") ~ "Mathematical Science Occupations",
+      Occupation %in% c("Architectural and engineering managers",
+                 "Surveyors, cartographers, and photogrammetrists",
+                 "Aerospace engineers",
+                 "Agricultural engineers",
+                 "Bioengineers and biomedical engineers",
+                 "Chemical engineers",
+                 "Civil engineers",
+                 "Computer hardware engineers",
+                 "Electrical and electronics engineers",
+                 "Environmental engineers",
+                 "Industrial engineers, including health and safety ",
+                 "Marine engineers and naval architects",
+                 "Materials engineers",
+                 "Mechanical engineers",
+                 "Mining and geological engineers, including mining safety engineers",
+                 "Nuclear engineers",
+                 "Petroleum engineers",
+                 "Engineers, all other",
+                 "Architectural and civil drafters",
+                 "Other engineering technologists and technicians, except drafters",
+                 "Surveying and mapping technicians",
+                 "Sales engineers") ~ "Engineering Occupations",
+       Occupation %in% c("Natural sciences managers",
+                 "Agricultural and food scientists",
+                 "Biological scientists",
+                 "Conservation scientists and foresters",
+                 "Medical scientists",
+                 "Life scientists, all other") ~ "Life Scientists Occupations",  
+       Occupation %in% c("Astronomers and physicists",
+                 "Atmospheric and space scientists",
+                 "Chemists and materials scientists",
+                 "Environmental scientists and specialists, including health",
+                 "Physical scientists, all other") ~ "Physical Scientists Occupations",        Occupation %in% c("Economists",
+                 "Survey researchers",
+                 "Clinical and counseling psychologists",
+                 "Urban and regional planners",
+                 "Miscellaneous social scientists and related workers") ~ "Social Scientists Occupations",       
+       Occupation %in% c("Agricultural and food science technicians",
+                 "Biological technicians",
+                 "Chemical technicians",
+                 "Environmental science and geoscience technicians",
+                 "Nuclear technicians",
+                 "Social science research assistants",
+                 "Other life, physical, and social science technicians") ~ "Life, Physical, and Social Science Technicians",     
+       Occupation %in% c("Architects, except landscape and naval") ~ "Architecture Occupations",       
+       Occupation %in% c("Medical and health services managers",
+                 "Chiropractors",
+                 "Dentists",
+                 "Dietitians and nutritionists",
+                 "Optometrists",
+                 "Pharmacists",
+                 "Surgeons",
+                 "Physician assistants",
+                 "Podiatrists",
+                 "Audiologists",
+                 "Occupational therapists",
+                 "Physical therapists",
+                 "Radiation therapists",
+                 "Recreational therapists",
+                 "Respiratory therapists",
+                 "Speech-language pathologists",
+                 "Therapists, all other",
+                 "Veterinarians",
+                 "Registered nurses",
+                 "Nurse anesthetists",
+                 "Nurse midwives",
+                 "Nurse practitioners",
+                 "Healthcare diagnosing or treating practitioners, all other",
+                 "Clinical laboratory technologists and technicians",
+                 "Dental hygienists",
+                 "Diagnostic medical sonographers",
+                 "Emergency medical technicians",
+                 "Licensed practical and licensed vocational nurses",
+                 "Medical records specialists",
+                 "Opticians, dispensing",
+                 "Miscellaneous health technologists and technicians",
+                 "Other healthcare practitioners and technical occupations") ~ "Healthcare Occupations",       
+
+      TRUE ~ "Other"
+    )
+  )
+
+
+category_summaries <- stem_data %>%
+  group_by(Category) %>%
+  summarise(
+    Occupation = first(Category),  
+    Total = sum(Total),
+    Total_MOE = sqrt(sum(Total_MOE^2)),
+    Males = sum(Males),
+    Males_MOE = sqrt(sum(Males_MOE^2)),
+    Females = sum(Females),
+    Females_MOE = sqrt(sum(Females_MOE^2)),
+    Female_Percentage = round(sum(Females) / sum(Total) * 100, 1),
+    Female_Percentage_MOE = round(100 * sqrt((Females_MOE / Females)^2 + (Total_MOE / Total)^2), 1)
+  ) %>%
+  filter(Category %in% c("Computer Occupations", "Mathematical Science Occupations", "Engineering Occupations", "Life Scientists Occupations", "Physical Scientists Occupations", "Social Scientists Occupations", "Architecture Occupations", "Healthcare Occupations")) %>%
+  ungroup()  
+
+category_summaries <- category_summaries %>%
+  select(-Category)
+
+final_data <- bind_rows(stem_data, category_summaries)
+
+view(final_data)
+```
+
+```{r}
+write.csv(final_data, "2012-STEM Occupations by sex.csv", row.names = FALSE)
+```
+

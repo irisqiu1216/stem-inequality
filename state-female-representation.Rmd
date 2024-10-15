@@ -1,0 +1,60 @@
+---
+title: "state-female-representation"
+author: "Iris Qiu"
+date: "2024-04-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```         
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(psych)
+library(tidycensus)
+```
+
+```         
+census_api_key("PASTE YOUR KEY HERE", install=TRUE)
+```
+
+```{r}
+state <- read_csv("state.csv")
+View(state)
+```
+```{r}
+state_detailed_occupations <- state[c(1, 4,5,7,8,9,11,12,13,14,16,17,19,21,22,23,24,25,27,28,30,31,32,34,35,36), c(1,seq(10,521, by=10))]
+view(state_detailed_occupations)
+```
+
+```{r}
+#rename column
+state_detailed_occupations <- state_detailed_occupations %>% rename(occupations = `Label (Grouping)`)
+view(state_detailed_occupations)
+```
+
+```{r}
+#remove the leading spaces 
+state_detailed_occupations$occupations <- str_trim(state_detailed_occupations$occupations)
+
+# Now, print the unique values to verify if leading spaces have been removed
+print(unique(state_detailed_occupations$occupations))
+```
+```{r}
+# Remove percentage sign and convert to numeric
+state_detailed_occupations <- state_detailed_occupations %>%
+  mutate(across(contains("Percent Female"), ~as.numeric(sub("%", "", .))))
+
+# Remove "!!Percent Female!!Estimate" from column names
+names(state_detailed_occupations) <- gsub("!!Percent Female!!Estimate", "", names(state_detailed_occupations))
+
+# View the updated dataframe
+View(state_detailed_occupations)
+write.csv(state_detailed_occupations, "2022 Female representions in state level for all occupation categories.csv", row.names = FALSE)
+```
+
+

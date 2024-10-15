@@ -17,7 +17,7 @@
       .scrolly-overlay {
         position: relative;
         padding: 0;
-        max-width: 35rem;
+        max-width: 30rem;
         margin: 0 auto;
       }
 
@@ -25,11 +25,11 @@
         position: -webkit-sticky;
         position: sticky;
         left: 0;
-        width: 100%;
+        width: 110%;
         margin: 0;
         z-index: 0;
         top: 0;
-        height: 100vh;
+        height: 90vh;
         /* Center everything inside */
         display: flex;
         justify-content: center;
@@ -42,13 +42,13 @@
         margin-bottom: 25rem;
         background-color: white;
         color: black;
-        /* border: 3px solid white; */
+        border: 2px solid palevioletred;
       }
 
       .step p {
         text-align: center;
         padding: 1rem;
-        font-size: 1.25rem;
+        font-size: 0.75rem;
         /* border: black; */
         /* border: 3px solid goldenrod; */
       }
@@ -102,7 +102,12 @@
             <header>
 
               <h1>Where is “She” in STEM fields?</h1>
-              <p id="byline">By Iris (Yichong) Qiu</p>
+              <p id="subtitle">The gender gap in STEM-related occupations has remained significant over the past decade, both at the national and state levels.</p>
+              <div class="byline">
+                <p>By Iris (Yichong) Qiu</p>
+                <p>Sep 15, 2024</p>
+              </div>
+              
               <p>
                 Elaine Wei, a graduate student at UC Berkeley, has been studying architecture for nearly seven years. As she prepares to enter the workforce, this persistent gender imbalance has become a growing concern.
               </p>
@@ -278,10 +283,10 @@
         <div class="scrolly-overlay">
           <div class="step" id="step-zero">
             <!-- <p>STEP ZERO<br><br>The first thing to happen.</p> -->
-            <p>Ten years ago, women in all STEM fields earned less than men, with women’s earnings averaging only about 80% of men’s. Over the past decade, the gender pay gap has not significantly closed, with only in six out of nine occupational categories has the gap narrowed.</p>
+            <p class="scroll-text">Ten years ago, women in all STEM fields earned less than men, with women’s earnings averaging only about 80% of men’s. Over the past decade, the gender pay gap has not significantly closed, with only in six out of nine occupational categories has the gap narrowed.</p>
           </div>
           <div class="step" id="step-one">
-            <p>Among the nine occupation categories, only life scientists occupations once had female earned more than males, which happened in 2016.</p>
+            <p class="scroll-text">Among the nine occupation categories, only life scientists occupations once had female earned more than males, which happened in 2016.</p>
           </div>
           <!-- <div class="step" id="step-two">
             <p>STEP TWO</p>
@@ -451,8 +456,8 @@
             <section>
               <div id="state">
                 <h2>How about the situation at the state level?</h2>
+                <p id="above-map">By only looking at the most representative occupations in the STEM fields — computer and mathematic occupations (which used different data than the previous part analyzing national data) — at the state level, you could see that the state that has the narrowest gender gap only has 35.8% females employed, which is still a low proportion. </p>
                 <div class="flourish-embed flourish-map" data-src="visualisation/19790533"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/19790533/thumbnail" width="100%" alt="map visualization" /></noscript></div> 
-                <p>By only looking at the most representative occupations in the STEM fields — computer and mathematic occupations (which used different data than the previous part analyzing national data) — at the state level, you could see that the state that has the narrowest gender gap only has 35.8% females employed, which is still a low proportion. </p>
 
                 <p>Utah is the state that has the widest gender gap. California, the home of tech company talent, also has less than 25% of women in the computer and mathematics industry. </p>
               </div> 
