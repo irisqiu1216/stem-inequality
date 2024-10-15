@@ -90,6 +90,11 @@ footer{
   margin: 3rem 0 0 0;
 }
 
+a{
+  text-decoration: none;
+  color:rgb(1, 1, 42);
+}
+
 
 
 
